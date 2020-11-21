@@ -1,0 +1,41 @@
+﻿
+@{
+    ViewData["Title"] = "Novo Jogo";
+}
+
+@model DA2_2020_PRJ.Models.DadosNovoJogo
+
+    <div class="jumbotron text-center">
+        <h2><strong>Novo Jogo</strong></h2>
+
+        <!--Form-->
+        <form asp-action="Index" method="post">
+            <div asp-validation-summary="All"></div>
+            <div>
+                <div>
+                    <label asp-for="NumeroJogadores">Quantos jogadores?</label>
+                    <select asp-for="NumeroJogadores">
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                    </select>
+
+                </div>
+                <div>
+                    <label asp-for="ModoDeJogo">Modo de jogo?</label>
+                    <select asp-for="ModoDeJogo">
+                        <option value="Tradicional">Tradicional</option>
+                        <option value="Desafio">Desafio</option>
+                        <option value="Batalha">Batalha</option>
+                    </select>
+                </div>
+
+                <div>
+                    <button type="submit">Seguinte</button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+

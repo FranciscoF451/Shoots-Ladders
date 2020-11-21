@@ -1,0 +1,673 @@
+﻿@{
+    ViewData["Title"] = "Protótipo";
+    Layout = null;
+    int i = 1;
+   
+}
+
+@model DA2_2020_PRJ.Models.Jogo
+
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <!-- this prototype includes code adapted from Snakes and Ladders script by Birgit Ferran (birgit@eoiweb.com),
+     Dice Roller Script by Brian Gosselin-http://scriptasylum.com/games/dice/dice.html, and
+     Escola Soeiro Pereira Gomes-http://www.cienciaviva.pt/projectos/ecomarinhos/gloria/A_menina.htm -->
+
+    <title>Protótipo</title>
+    <link rel="stylesheet" href="/css/site.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body bgcolor="#FFFFFF" text="#000000" onload="go()">
+
+    <form name="vars">
+        <input type="hidden" name="boardStepX" value="72" />
+        <input type="hidden" name="boardStepY" value="100" />
+        <input type="hidden" name="boardMinX" value="94" />
+        <input type="hidden" name="boardMaxX" value="500" />
+        <input type="hidden" name="boardYLevel4A" value="" />
+        <input type="hidden" name="boardYLevel4B" value="" />
+        <input type="hidden" name="boardYLevel3A" value="95" />
+        <input type="hidden" name="boardYLevel3B" value="120" />
+        <input type="hidden" name="boardYLevel2A" value="295" />
+        <input type="hidden" name="boardYLevel2B" value="320" />
+        <input type="hidden" name="boardYLevel1A" value="495" />
+        <input type="hidden" name="boardYLevel1B" value="520" />
+        <input type="hidden" name="playerCount" value=@Model.NumeroJogadores />
+        <input type="hidden" name="player1x" value="@Model.Player1x" />
+        <input type="hidden" name="player1y" value="@Model.Player1y" />
+        <input type="hidden" name="player2x" value="@Model.Player2x" />
+        <input type="hidden" name="player2y" value="@Model.Player2y" />
+        <input type="hidden" name="player3x" value="@Model.Player3x" />
+        <input type="hidden" name="player3y" value="@Model.Player3y" />
+        <input type="hidden" name="player4x" value="@Model.Player4x" />
+        <input type="hidden" name="player4y" value="@Model.Player4y" />
+        <input type="hidden" name="livePlayer" value="@Model.JogadorQueMove" />
+        <input type="hidden" name="doDiceRoll" value="@Model.AnimacaoDado" />
+        <input type="hidden" name="diceValue" value="@Model.ValorDado" />
+        <input type="hidden" name="moveSteps" value="@Model.MovimentoJogador" />
+
+        <input type="hidden" name="actionMessage" value="@Model.Mensagem" />
+        <input type="hidden" name="actionSteps" value="@Model.MovimentoAposMensagem" />
+    </form>
+    <script language="JavaScript">
+
+        //Snakes and Ladders script by Birgit Ferran (birgit@eoiweb.com) More scripts for creating interactive language learning activities can be found on the web at http://www.eoiweb.com/EoiTeach
+        //Please feel free to use and adapt this script but please leave this message intact. A link to EoiTeach would also be appreciated.
+        //If you would like to share the activities you have created with other teachers, please send me an email with the URL of your activity.
+
+        var ie = (document.all) ? true : false;
+        var ns4 = (document.layers) ? true : false;
+        var ns6 = ((document.getElementById) ? true : false) && !ie;
+
+        function refPlayer(name) {
+            if (ie) { return eval('document.all.' + name + '.style'); }
+            if (ns4) { return document.layers[name]; }
+            if (ns6 && !ie) { return eval('document.getElementById("' + name + '").style'); }
+        }
+
+        function capaON(name) {
+            refPlayer(name).visibility = 'visible';
+        }
+
+        function capaOFF(name) {
+            refPlayer(name).visibility = 'hidden';
+        }
+
+        function writetolayer(name, txt) {
+            if (ie) {
+                document.all[name].innerHTML = txt;
+            }
+            if (ns4) {
+                document[name].document.write(txt);
+                document[name].document.close();
+            }
+            if (ns6) {
+                over = document.getElementById([name]);
+                range = document.createRange();
+                range.setStartBefore(over);
+                domfrag = range.createContextualFragment(txt);
+                while (over.hasChildNodes()) {
+                    over.removeChild(over.lastChild);
+                }
+                over.appendChild(domfrag);
+            }
+        }
+
+        //Global variables
+
+
+        //model variables
+        var boardStepX = parseInt(document.vars.boardStepX.value, 10);
+        var boardStepY = parseInt(document.vars.boardStepY.value, 10);
+        var boardMinX = parseInt(document.vars.boardMinX.value, 10);
+        var boardMaxX = parseInt(document.vars.boardMaxX.value, 10);
+        var boardYLevel1A = parseInt(document.vars.boardYLevel1A.value, 10);
+        var boardYLevel1B = parseInt(document.vars.boardYLevel1B.value, 10);
+        var boardYLevel2A = parseInt(document.vars.boardYLevel2A.value, 10);
+        var boardYLevel2B = parseInt(document.vars.boardYLevel2B.value, 10);
+        var boardYLevel3A = parseInt(document.vars.boardYLevel3A.value, 10);
+        var boardYLevel3B = parseInt(document.vars.boardYLevel3B.value, 10);
+        var boardYLevel4A = parseInt(document.vars.boardYLevel4A.value, 10);
+        var boardYLevel4B = parseInt(document.vars.boardYLevel4B.value, 10);
+        var playerCount = parseInt(document.vars.playerCount.value, 10);
+        var player1x = parseInt(document.vars.player1x.value, 10);
+        var player1y = parseInt(document.vars.player1y.value, 10);
+        var player2x = parseInt(document.vars.player2x.value, 10);
+        var player2y = parseInt(document.vars.player2y.value, 10);
+        var player3x = parseInt(document.vars.player3x.value, 10);
+        var player3y = parseInt(document.vars.player3y.value, 10);
+        var player4x = parseInt(document.vars.player4x.value, 10);
+        var player4y = parseInt(document.vars.player4y.value, 10);
+        var livePlayer = document.vars.livePlayer.value;
+        var doDiceRoll = (document.vars.doDiceRoll.value === 'true');
+        var diceValue = parseInt(document.vars.diceValue.value, 10);
+        var moveSteps = parseInt(document.vars.moveSteps.value, 10);
+        var actionMessage = document.vars.actionMessage.value;
+        var actionSteps = parseInt(document.vars.actionSteps.value, 10);
+        //end model variables
+
+        var p1x = player1x;
+        var p1y = player1y;
+        var p2x = player2x;
+        var p2y = player2y;
+        var p3x = player3x;
+        var p3y = player3y;
+        var p4x = player4x;
+        var p4y = player4y;
+
+        var d1;
+        var headback;
+        var ctr = 0; // for rolldice async cycle
+        var delayMove = 150;
+        var delayStartMove = 300;
+
+        var currentPlayer = livePlayer;
+
+        //Function which defines which layer is moved where
+        function whichX() {
+            if (currentPlayer == "one") { return p1x }
+            if (currentPlayer == "two") { return p2x }
+            if (currentPlayer == "three") { return p3x }
+            if (currentPlayer == "four") { return p4x }
+        }
+
+        function whichY() {
+            if (currentPlayer == "one") { return p1y }
+            if (currentPlayer == "two") { return p2y }
+            if (currentPlayer == "three") { return p3y }
+            if (currentPlayer == "four") { return p4y }
+        }
+
+        function showPlayer(name) {
+            refPlayer(name).left = whichX();
+            refPlayer(name).top = whichY();
+        }
+
+        function mouCapa() {
+            var currenty = whichY();
+            if (currenty == boardYLevel1A || currenty == boardYLevel1B || currenty == boardYLevel2A || currenty == boardYLevel2B || currenty == boardYLevel3A || currenty == boardYLevel3B || currenty == boardYLevel4A || currenty == boardYLevel4B)
+                mouCapaRight()
+            else
+                mouCapaLeft()
+        }
+
+        function mouCapaRight() {
+            var currentx = whichX();
+            if (currentx < boardMaxX) {
+                moveforward();
+            }
+            else {
+                moveup();
+            }
+            showPlayer(currentPlayer);
+            d1--;
+            if (d1 > 0) {
+                setTimeout("mouCapa()", delayMove);
+            }
+            else {
+                if (actionMessage != "") {
+                    capaON('panelMessage');
+                }
+                else
+                    setFinalPositions();
+            }
+        }
+
+        function mouCapaLeft() {
+            var currentx = whichX();
+
+            if (currentx > boardMinX) {
+                moveback();
+            }
+            else {
+                moveup();
+            }
+            showPlayer(currentPlayer);
+            d1--;
+            if (d1 > 0) {
+                setTimeout("mouCapa()", delayMove);
+            }
+            else {
+                if (actionMessage != "") {
+                    capaON('panelMessage');
+                }
+                else
+                    setFinalPositions();
+            }
+        }
+
+        function moveforward() {
+            switch (currentPlayer) {
+                case "one":
+                    p1x += boardStepX;
+                    break;
+                case "two":
+                    p2x += boardStepX;
+                    break;
+                case "three":
+                    p3x += boardStepX;
+                    break;
+                case "four":
+                    p4x += boardStepX;
+                    break;
+            }
+        }
+
+        function moveback() {
+            switch (currentPlayer) {
+                case "one":
+                    p1x -= boardStepX;
+                    break;
+                case "two":
+                    p2x -= boardStepX;
+                    break;
+                case "three":
+                    p3x -= boardStepX;
+                    break;
+                case "four":
+                    p4x -= boardStepX;
+                    break;
+            }
+        }
+
+        function movedown() {
+            switch (currentPlayer) {
+                case "one":
+                    p1y += boardStepY;
+                    break;
+                case "two":
+                    p2y += boardStepY;
+                    break;
+                case "three":
+                    p3y += boardStepY;
+                    break;
+                case "four":
+                    p4y += boardStepY;
+                    break;
+            }
+        }
+
+        function moveup() {
+            switch (currentPlayer) {
+                case "one":
+                    p1y -= boardStepY;
+                    break;
+                case "two":
+                    p2y -= boardStepY;
+                    break;
+                case "three":
+                    p3y -= boardStepY;
+                    break;
+                case "four":
+                    p4y -= boardStepY;
+                    break;
+            }
+        }
+
+        function goBackCapa() {
+            var currenty = whichY();
+            if (currenty == boardYLevel1A || currenty == boardYLevel1B || currenty == boardYLevel2A || currenty == boardYLevel2B || currenty == boardYLevel3A || currenty == boardYLevel3B || currenty == boardYLevel4A || currenty == boardYLevel4B)
+                goBackCapaLeft()
+            else
+                goBackCapaRight()
+        }
+
+        function goBackCapaRight() {
+            var currentx = whichX();
+            if (currentx < boardMaxX) {
+                moveforward();
+            }
+            else {
+                movedown();
+            }
+            showPlayer(currentPlayer);
+            headback--;
+            if (headback > 0) {
+                setTimeout("goBackCapa()", delayMove);
+            }
+            else {
+                if (actionMessage != "") {
+                    capaON('panelMessage');
+                }
+                else
+                    setFinalPositions();
+            }
+        }
+
+        function goBackCapaLeft() {
+            var currentx = whichX();
+            if (currentx > boardMinX) {
+                moveback();
+            }
+            else {
+                movedown();
+            }
+            showPlayer(currentPlayer);
+            headback--;
+            if (headback > 0) {
+                setTimeout("goBackCapa()", delayMove);
+            }
+            else {
+                if (actionMessage != "") {
+                    capaON('panelMessage');
+                }
+                else
+                    setFinalPositions();
+            }
+        }
+
+        var images = new Array();
+        for (i = 0; i <= 6; i++) {
+            images[i] = new Image(); images[i].src = '/images/dice' + i + '.gif';
+        }
+
+        function rolldice() {
+            if (ctr < 6) {
+                showdice();
+                ctr++;
+                setTimeout('rolldice()', delayMove);
+            } else {
+                ctr = 0;
+                showdiceFixedAndMove();
+            }
+        }
+
+        function showdice() {
+            d1 = Math.floor(Math.random() * 6 + 1);
+            headback = d1;
+            document.images['d1'].src = '/images/dice' + d1 + '.gif';
+        }
+
+        function showdiceFixedAndMove() {
+            d1 = diceValue;  //show fixed dice value
+            document.images['d1'].src = '/images/dice' + d1 + '.gif';
+            d1 = moveSteps;  // move fixed number of steps (may be different than the dice value)
+            headback = -moveSteps; //used for moving back. Make it a positive number (player will go back |movesteps|)
+            doMove();
+        }
+
+        function doMove() {
+            if (moveSteps > 0)
+                setTimeout("mouCapa()", delayStartMove);
+            else if (moveSteps < 0)
+                setTimeout("goBackCapa()", delayStartMove);
+            else {
+                if (actionMessage != "") {
+                    capaON('panelMessage');
+                }
+                else {
+                    setFinalPositions();
+                }
+            }
+
+        }
+
+        function setFinalPositions() {
+            document.playeractions.player1x.value = p1x;
+            document.playeractions.player1y.value = p1y;
+            document.playeractions.player2x.value = p2x;
+            document.playeractions.player2y.value = p2y;
+            document.playeractions.player3x.value = p3x;
+            document.playeractions.player3y.value = p3y;
+            document.playeractions.player4x.value = p4x;
+            document.playeractions.player4y.value = p4y;
+            document.getElementById('botaoJogar').disabled = false;
+
+            document.perguntafinal.player1x.value = p1x;
+            document.perguntafinal.player1y.value = p1y;
+            document.perguntafinal.player2x.value = p2x;
+            document.perguntafinal.player2y.value = p2y;
+            document.perguntafinal.player3x.value = p3x;
+            document.perguntafinal.player3y.value = p3y;
+            document.perguntafinal.player4x.value = p4x;
+            document.perguntafinal.player4y.value = p4y;
+        }
+
+        function setPlayerCount() {
+            numPlayers = playerCount;
+            setPlayerPos("one");
+            capaON("one")
+            if (numPlayers >= 2) {
+                setPlayerPos("two");
+                capaON("two")
+            }
+            else {
+                capaOFF("two")
+            }
+            if (numPlayers >= 3) {
+                setPlayerPos("three");
+                capaON("three")
+            }
+            else {
+                capaOFF("three")
+            }
+            if (numPlayers >= 4) {
+                setPlayerPos("four");
+                capaON("four")
+            }
+            else {
+                capaOFF("four")
+            }
+            capaON("dice")
+        }
+
+        function setPlayerPos(name) {
+            switch (name) {
+                case "one":
+                    refPlayer(name).left = p1x;
+                    refPlayer(name).top = p1y;
+                    break;
+                case "two":
+                    refPlayer(name).left = p2x;
+                    refPlayer(name).top = p2y;
+                    break;
+                case "three":
+                    refPlayer(name).left = p3x;
+                    refPlayer(name).top = p3y;
+                    break;
+                case "four":
+                    refPlayer(name).left = p4x;
+                    refPlayer(name).top = p4y;
+                    break;
+            }
+        }
+
+        function go() {
+            setPlayerCount()
+            if (doDiceRoll)
+                rolldice();
+            else
+                showdiceFixedAndMove();
+        }
+
+        function continueAfterActionMessage() {
+            capaOFF('panelMessage');
+            actionMessage = ""; //prevent redisplay of message after possible action steps
+            if (actionSteps != 0) {
+                moveSteps = actionSteps;
+                d1 = moveSteps;
+                headback = -moveSteps;
+                doMove();
+            }
+            else
+                setFinalPositions();
+
+
+        }
+
+    </script>
+
+    <div id="infodebug">
+        <script language="JavaScript">
+            document.write('<p><b>boardStepX:</b>' + boardStepX);
+            document.write(', <b>boardStepY:</b>' + boardStepY + '</p>');
+            document.write('<p><b>boardMinX:</b>' + boardMinX);
+            document.write(', <b>boardMaxX:</b>' + boardMaxX + '</p>');
+            document.write('<p><b>boardYLevel1A:</b>' + boardYLevel1A);
+            document.write(', <b>boardYLevel1B:</b>' + boardYLevel1B + '</p>');
+            document.write('<p><b>boardYLevel2A:</b>' + boardYLevel2A);
+            document.write(', <b>boardYLevel2B:</b>' + boardYLevel2B + '</p>');
+            document.write('<p><b>boardYLevel3A:</b>' + boardYLevel3A);
+            document.write(', <b>boardYLevel3B:</b>' + boardYLevel3B + '</p>');
+            document.write('<p><b>boardYLevel4A:</b>' + boardYLevel4A);
+            document.write(', <b>boardYLevel4B:</b>' + boardYLevel4B + '</p>');
+            document.write('<p><b>player1x:</b>' + player1x);
+            document.write(', <b>player1y:</b>' + player1y + '</p>');
+            document.write('<p><b>player2x:</b>' + player2x);
+            document.write(', <b>player2y:</b>' + player2y + '</p>');
+            document.write('<p><b>player3x:</b>' + player3x);
+            document.write(', <b>player3y:</b>' + player3y + '</p>');
+            document.write('<p><b>player4x:</b>' + player4x);
+            document.write(', <b>player4y:</b>' + player4y + '</p>');
+            document.write('<p><b>livePlayer:</b>' + livePlayer);
+            document.write(', <b>moveSteps:</b>' + moveSteps + '</p>');
+            document.write('<p><b>diceValue:</b>' + diceValue);
+            document.write(', <b>doDiceRoll:</b>' + doDiceRoll + '</p>');
+            document.write('<p><b>actionMessage:</b>' + actionMessage);
+            document.write(', <b>actionSteps:</b>' + actionSteps + '</p>');
+        </script>
+    </div>
+    <div id="board"><img src="~/images/board1.png" width="600" height="550"></div>
+    <div id="one"><img src="/images/player1.gif" width="22" height="23"></div>
+    <div id="two"><img src="/images/player2.gif" width="22" height="23"></div>
+    <div id="three"><img src="/images/player3.gif" width="22" height="23"></div>
+    <div id="four"><img src="/images/player4.gif" width="22" height="23"></div>
+
+    <div id="panelMessage" style="visibility: hidden;">
+        <script language="JavaScript">
+            document.write(actionMessage + '<br><div><form><input type="button" value="Continuar" onClick="continueAfterActionMessage()"></form></div>')
+        </script>
+    </div>
+
+
+
+    <div class="relative-parent">
+
+
+        <div class="DadosdosJogadores" style="font-size: 24px">
+
+
+            @foreach (DA2_2020_PRJ.Models.Jogador j in Model.Jogadores)
+            {
+                <p class="list-group-item"><b>Jogador @i:</b><span class="badge">@j.Nome</span></p>
+                i = i + 1;
+            }
+            <p class="list-group-item"><b>Modo de Jogo:</b><span class="badge">@Model.ModoDeJogo</span></p>
+            <p class="list-group-item"><b>Número de Jogadores:</b><span class="badge">@Model.NumeroJogadores</span></p>
+
+            <p class="list-group-item"><b>Jogador Ativo:</b><span class="badge">@Model.JogadorAtivo</span></p>
+            @if (Model.ModoDeJogo == "Batalha")
+            {
+                <p class="list-group-item"><b>Aspirador a Jato:</b><span class="badge"></span></p>
+                <p class="list-group-item"><b>Escudo Atómico:</b><span class="badge"></span></p>
+                <p class="list-group-item"><b>Armadilha Magnética:</b><span class="badge"></span></p>
+            }
+
+        </div>
+
+        <div id="dice">
+            <script language="JavaScript">
+                document.writeln('<table width="200" border="0"><tr><td><form name="f"><center><img src="/images/dice1.gif" name="d1"><br></form></td></tr></table>');
+            </script>
+        </div>
+
+        <div id="Comandos">
+            <form asp-action="ExecutarAcao" method="post" name="playeractions">
+                <div>
+                    <input type="hidden" name="idJogo" value="@Model.Id" />
+                    <input type="hidden" name="player1x" />
+                    <input type="hidden" name="player1y" />
+                    <input type="hidden" name="player2x" />
+                    <input type="hidden" name="player2y" />
+                    <input type="hidden" name="player3x" />
+                    <input type="hidden" name="player3y" />
+                    <input type="hidden" name="player4x" />
+                    <input type="hidden" name="player4y" />
+
+                    <button type="submit" name="playerAction" value="LancarDado" disabled id="botaoJogar">Lançar Dado</button>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (Model.Jogadores[Model.JogadorAtivo - 1].Casa == 40)
+    {
+        if (Model.ModoDeJogo == "Desafio")
+        {
+            if (Model.RespostaDada == Model.Perguntas[Model.PerguntaFinal].RespostaCerta)
+            {
+                <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">Parabéns @Model.Jogadores[Model.JogadorAtivo - 1].Nome</h5>
+                            </div>
+                            <div class="modal-body">
+                                <img id="dancaST" src="~/images/storm_dance.gif" />
+                                <p>Muitos Parabéns @Model.Jogadores[Model.JogadorAtivo - 1].Nome!! Vences-te o Modo de @Model.ModoDeJogo a força esteve do teu lado neste jogo!!</p>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="button" value="Novo Jogo" onclick="location.href='@Url.Action("Index", "Jogo")'" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="staticBackdropLabel">Pergunta Final: @Model.Perguntas[Model.PerguntaFinal].ID</h4>
+                            <h4 class="modal-title" id="staticBackdropLabel">Categoria: @Model.Perguntas[Model.PerguntaFinal].Categoria</h4>
+                        </div>
+                        <form asp-action="ExecutarAcao" method="post" name="perguntafinal">
+                            <div class="modal-body">
+                                <p>@Model.Perguntas[Model.PerguntaFinal].TextoPergunta</p>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="resposta" id="radio1" value="1" checked>
+                                    <label class="form-check-label" for="radio1">@Model.Perguntas[Model.PerguntaFinal].Resposta1</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="resposta" id="radio2" value="2">
+                                    <label class="form-check-label" for="radio2">@Model.Perguntas[Model.PerguntaFinal].Resposta2</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="resposta" id="radio3" value="3">
+                                    <label class="form-check-label" for="radio3">@Model.Perguntas[Model.PerguntaFinal].Resposta3</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="resposta" id="radio4" value="4">
+                                    <label class="form-check-label" for="radio4">@Model.Perguntas[Model.PerguntaFinal].Resposta4</label>
+                                </div>
+                                <input type="hidden" name="idJogo" value="@Model.Id" />
+                                <input type="hidden" name="player1x" />
+                                <input type="hidden" name="player1y" />
+                                <input type="hidden" name="player2x" />
+                                <input type="hidden" name="player2y" />
+                                <input type="hidden" name="player3x" />
+                                <input type="hidden" name="player3y" />
+                                <input type="hidden" name="player4x" />
+                                <input type="hidden" name="player4y" />
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" name="playerAction" value="Responder" id="btnNovoJogo">Confirmar Resposta</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">Parabéns @Model.Jogadores[Model.JogadorAtivo - 1].Nome</h5>
+                        </div>
+                        <div class="modal-body">
+                            <img id="dancaST" src="~/images/storm_dance.gif" />
+                            <p>Muitos Parabéns @Model.Jogadores[Model.JogadorAtivo - 1].Nome!! Vences-te o @Model.ModoDeJogo a força esteve do teu lado neste jogo!!</p>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="button" value="Novo Jogo" onclick="location.href='@Url.Action("Index", "Jogo")'" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript">
+        $(window).on('load', function () {
+            $('#staticBackdrop').modal('show');
+        });
+    </script>
+</body>
+</html>

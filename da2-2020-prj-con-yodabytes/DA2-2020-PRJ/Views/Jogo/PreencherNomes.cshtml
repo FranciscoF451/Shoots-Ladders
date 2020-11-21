@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Nomes dos Jogadores";
+}
+
+@model DA2_2020_PRJ.Models.DadosNovoJogo
+
+<div class="jumbotron text-center">
+    <h2>Nomes dos Jogadores</h2>
+    <form asp-action="PreencherNomes" method="post">
+        <div asp-validation-summary="All"></div>
+        <input type="hidden" asp-for="NumeroJogadores" value="@Model.NumeroJogadores">
+        <input type="hidden" asp-for="ModoDeJogo" value="@Model.ModoDeJogo">
+        <div>
+            <label asp-for="NomeJogador1">Nome do Jogador 1:</label>
+            <input asp-for="NomeJogador1" value="Jogador 1"/>
+        </div>
+        <div>
+            <label asp-for="NomeJogador2">Nome do Jogador 2:</label>
+            <input asp-for="NomeJogador2" value="Jogador 2"/>
+        </div>
+        @if (Model.NumeroJogadores == 3)
+        {
+            <div>
+                <label asp-for="NomeJogador3">Nome do Jogador 3:</label>
+                <input asp-for="NomeJogador3" value="Jogador 3"/>
+            </div>
+        }
+        else if (Model.NumeroJogadores == 4)
+        {
+            <div>
+                <label asp-for="NomeJogador3">Nome do Jogador 3:</label>
+                <input asp-for="NomeJogador3" value="Jogador 3"/>
+            </div>
+            <div>
+                <label asp-for="NomeJogador4">Nome do Jogador 4:</label>
+                <input asp-for="NomeJogador4" value="Jogador 4"/>
+            </div>
+        }
+        <div>
+            <button type="submit">Começar o jogo</button>
+        </div>
+    </form>
+</div>
+
+
+
+
+

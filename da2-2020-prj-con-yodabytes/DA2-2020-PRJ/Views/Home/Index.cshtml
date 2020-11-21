@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<div class="text-center">
+    <h1 class="display-4">Jogo Do Consumidor</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+<!--Criação de um carousel para tornar a homepage mais apelativa e também poder navegar para as diferentes views-->
+<div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <a asp-action="Equipa">
+                <img id="tamanhoImagem" class="d-block w-100" src="~/images/equipaProvisória.jpg" alt="First slide">
+            </a>
+        </div>
+        <div class="carousel-item">
+            <a asp-action="Instruçoes">
+                <img id="tamanhoImagem" class="d-block w-100" src="~/images/instruções.png" alt="Second slide">
+            </a>
+        </div>
+        <div class="carousel-item">
+            <a asp-controller="Jogo" asp-action="Index">
+                <img id="tamanhoImagem" class="d-block w-100" src="~/images/start.jpg" alt="Third slide">
+            </a>
+        </div>
+    </div>
+    <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
+
+
+
+</div>
+<br />
+<div id="Hometext">
+    <p>
+        O Jogo do Consumidor foi um projeto que realizámos no âmbito de uma unidade curricular do Instituto Politécnico de Setúbal tendo como objetivo
+        ser um jogo de tabuleiro intuitivo e que ao mesmo tempo vos ajude a aprender mais sobre um conjunto de temas, como a Alimentação, Saúde,
+        Poupança, Consumo e Ambiente. Vem divertir-te conosco e aprender coisas novas!!
+    </p>
+</div>
+<h1 id="msgFinal">Que a Força Esteja Contigo!!</h1>
